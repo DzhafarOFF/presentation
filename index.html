@@ -8,7 +8,7 @@
 
 		<link rel="stylesheet" href="css/reset.css">
 		<link rel="stylesheet" href="css/reveal.css">
-		<link rel="stylesheet" href="css/theme/black.css">
+		<link rel="stylesheet" href="css/theme/beige.css">
 
 		<!-- Theme used for syntax highlighting of code -->
 		<link rel="stylesheet" href="lib/css/monokai.css">
@@ -25,17 +25,147 @@
 	<body>
 		<div class="reveal">
 			<div class="slides">
-				<section>Slide 1</section>
-				<section>Slide 2</section>
+				<section data-markdown="slides/1.md"></section>
+				<section data-markdown>
+						<script type="text/template">
+							1. Text <!-- .element: class="fragment" -->
+							2. Buttons, links <!-- .element: class="fragment" -->
+							3. Images, video <!-- .element: class="fragment" -->
+							4. Forms <!-- .element: class="fragment" -->
+							## DOM <!-- .element: class="fragment" -->
+						</script>
+				</section>
+				<section>
+					<img src="slides/images/DOM-model.png">
+					From https://en.wikipedia.org/wiki/Document_Object_Model
+				</section>
+				<section>
+					Example of Manifest.JSON:
+					<pre class="json" data-trim>
+<code>{
+	// Required
+	"manifest_version": 2,
+	"name": "My Extension",
+	"version": "versionString",
+	
+	// Recommended
+	"default_locale": "en",
+	"description": "A plain text description",
+	"icons": {...},
+	...
+}</code></pre>
+					From https://developer.chrome.com/extensions/manifest
+				</section>
+				<section>
+					Content scripts
+					<pre class="json" data-trim>
+<code>{
+	"name": "My extension",
+	...
+	"content_scripts": [
+	  {
+		"matches": ["http://*.com/*"],
+		"css": ["myStyles.css"],
+		"js": ["contentScript.js"]
+	  }
+	],
+	...
+}</code></pre>
+					From https://developer.chrome.com/extensions/content_scripts
+				</section>
+				<section>
+					Background scripts
+<pre class="json" data-trim>
+<code>{
+	// Pick one (or none)
+	"browser_action": {...},
+	"page_action": {...},
+	"background": {
+		// Recommended
+		"scripts": ["background.js"],
+		"persistent": false,
+		// Optional
+		"service_worker":
+	  },
+	"devtools_page": "devtools.html",
+}</code></pre>
+				</section>
+					<section>
+							<img src="slides/images/Page_Browser_action.png">
+<pre class="json" data-trim><code>
+	...
+	"browser_action": {                      // or page_action
+		"default_icon": {                    // optional
+		"16": "images/icon16.png",           // optional
+		"24": "images/icon24.png",           // optional
+		"32": "images/icon32.png"            // optional
+		},
+		"default_title": "Your tittle",      // optional;
+		"default_popup": "popup.html"        // optional
+	},
+	...</code></pre>	
+						From https://developer.chrome.com/extensions/browserAction
+					</section>
+					<section>
+						
+					</section>
+				<section>
+						Message Passing
+<pre class="js" data-trim>
+<code>...
+// Sending a request from a content script looks like this
+chrome.runtime.sendMessage({greeting: "hello"}, function(response) {
+	console.log(response.farewell);
+	});
+
+// from the parent extension to a content script
+chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+	chrome.tabs.sendMessage(tabs[0].id, {greeting: "hello"},
+		function(response) {
+			console.log(response.farewell);
+		});
+	});
+...</code></pre>
+ From https://developer.chrome.com/extensions/messaging			
+				</section>
+				<section>
+						Message Passing
+<pre class="js" data-trim>
+<code>...
+// On the receiving end, you need to set up an runtime.onMessage 
+// event listener
+chrome.runtime.onMessage.addListener(
+	function(request, sender, sendResponse) {
+		console.log(sender.tab ?
+			"from a content script:" + sender.tab.url :
+			"from the extension");
+		if (request.greeting == "hello")
+			sendResponse({farewell: "goodbye"});
+	});
+...</code></pre>
+From https://developer.chrome.com/extensions/messaging
+				</section>
+				<section data-markdown>
+					<script type="text/template">
+						## W3C single standard API
+						### based on<!-- .element: class="fragment" -->
+						1. HTML <!-- .element: class="fragment" -->
+						2. CSS <!-- .element: class="fragment" -->
+						3. JS <!-- .element: class="fragment" -->
+
+						Almost cross-browser extension API<!-- .element: class="fragment" -->
+
+						:)<!-- .element: class="fragment" -->
+					</script>
+			</section>
+			<section data-markdown="slides/3.md"></section>
+			<section>Thanks, Bye!:)</section>
 			</div>
 		</div>
 
 		<script src="js/reveal.js"></script>
 
 		<script>
-			// More info about config & dependencies:
-			// - https://github.com/hakimel/reveal.js#configuration
-			// - https://github.com/hakimel/reveal.js#dependencies
 			Reveal.initialize({
 				dependencies: [
 					{ src: 'plugin/markdown/marked.js' },
